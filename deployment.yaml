@@ -1,0 +1,54 @@
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cloudscale
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: cloudscale
+
+  template:
+    metadata:
+      labels:
+        app: cloudscale
+
+    spec:
+      containers:
+        - name: cloudscale
+          image: cloudscale:v1
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 5000
+
+          envFrom:
+            - secretRef:
+                name: cloudscale-secrets
+
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20

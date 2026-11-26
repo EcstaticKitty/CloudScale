@@ -1,855 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>CloudScale | Workspace</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg: #080b16;
-            --glass: rgba(255, 255, 255, 0.055);
-            --glass-border: rgba(255, 255, 255, 0.10);
-            --muted: #929bb5;
-            --purple: #9275ff;
-            --blue: #4b9cff;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: var(--bg);
-            color: #f4f5ff;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* Ambient gradient background */
-
-        .ambient {
-            position: fixed;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.23;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .ambient.one {
-            background: #7045ff;
-            top: -220px;
-            left: -140px;
-        }
-
-        .ambient.two {
-            background: #087bff;
-            right: -180px;
-            top: 30%;
-        }
-
-        .ambient.three {
-            background: #bd3cff;
-            bottom: -350px;
-            left: 30%;
-        }
-
-        /* Navigation */
-
-        .navbar {
-            background: rgba(10, 13, 27, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 18px 0;
-        }
-
-        .brand {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(100deg, #ffffff, #a99aff, #70c4ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .brand-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 11px;
-            background: linear-gradient(135deg, #805bff, #419dff);
-            color: white;
-            margin-right: 9px;
-            box-shadow: 0 0 22px rgba(120, 100, 255, .4);
-        }
-
-        .nav-status {
-            color: #9de9c0;
-            font-size: 12px;
-            background: rgba(54, 211, 130, .09);
-            border: 1px solid rgba(54, 211, 130, .2);
-            padding: 7px 12px;
-            border-radius: 30px;
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            background: #50e69a;
-            border-radius: 50%;
-            margin-right: 7px;
-            box-shadow: 0 0 10px #50e69a;
-        }
-
-        /* Main layout */
-
-        .main-container {
-            max-width: 1000px;
-            padding-top: 65px;
-            padding-bottom: 70px;
-        }
-
-        .eyebrow {
-            color: #a99aff;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 14px;
-        }
-
-        .hero-title {
-            font-size: clamp(34px, 6vw, 54px);
-            font-weight: 800;
-            letter-spacing: -2.5px;
-            line-height: 1.15;
-        }
-
-        .gradient-text {
-            background: linear-gradient(100deg, #a18aff, #67baff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .hero-description {
-            color: var(--muted);
-            font-size: 15px;
-            margin-top: 14px;
-            line-height: 1.8;
-        }
-
-        /* Glass panels */
-
-        .glass {
-            background: rgba(255, 255, 255, .045);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            box-shadow: 0 15px 45px rgba(0, 0, 0, .15);
-        }
-
-        .stat-card {
-            padding: 22px;
-            transition: .25s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            background: rgba(255, 255, 255, .075);
-            border-color: rgba(160, 140, 255, .3);
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .stat-value {
-            font-size: 29px;
-            font-weight: 700;
-            margin-top: 9px;
-        }
-
-        .stat-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            font-size: 18px;
-        }
-
-        .purple-icon {
-            background: rgba(146, 117, 255, .15);
-            color: #b5a2ff;
-        }
-
-        .blue-icon {
-            background: rgba(75, 156, 255, .15);
-            color: #78baff;
-        }
-
-        .green-icon {
-            background: rgba(70, 220, 155, .13);
-            color: #62e9ae;
-        }
-
-        /* Task input */
-
-        .input-panel {
-            padding: 24px;
-            margin-top: 35px;
-        }
-
-        .section-title {
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: -.4px;
-        }
-
-        .form-control {
-            background: rgba(255, 255, 255, .055);
-            border: 1px solid rgba(255, 255, 255, .12);
-            color: white;
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 14px;
-            box-shadow: none !important;
-        }
-
-        .form-control:focus {
-            background: rgba(255, 255, 255, .08);
-            border-color: #9275ff;
-            color: white;
-        }
-
-        .form-control::placeholder {
-            color: #737d99;
-        }
-
-        .add-btn {
-            border: none;
-            border-radius: 12px;
-            padding: 13px 24px;
-            color: white;
-            font-weight: 600;
-            background: linear-gradient(110deg, #825cff, #438fff);
-            box-shadow: 0 5px 20px rgba(111, 91, 255, .25);
-            transition: .2s ease;
-            white-space: nowrap;
-        }
-
-        .add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(111, 91, 255, .4);
-            color: white;
-        }
-
-        /* Task list */
-
-        .task-section {
-            margin-top: 38px;
-        }
-
-        .task-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 18px 20px;
-            margin-bottom: 12px;
-            background: rgba(255, 255, 255, .045);
-            border: 1px solid rgba(255, 255, 255, .085);
-            border-radius: 15px;
-            transition: .25s ease;
-        }
-
-        .task-card:hover {
-            background: rgba(255, 255, 255, .075);
-            border-color: rgba(150, 130, 255, .3);
-            transform: translateX(3px);
-        }
-
-        .task-name {
-            font-size: 14px;
-            font-weight: 500;
-            overflow-wrap: anywhere;
-        }
-
-        .completed {
-            color: #75809c;
-            text-decoration: line-through;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .action-btn {
-            border-radius: 9px;
-            padding: 8px 13px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid transparent;
-            transition: .2s ease;
-        }
-
-        .done-btn {
-            background: rgba(61, 211, 145, .12);
-            color: #68e6ae;
-            border-color: rgba(61, 211, 145, .2);
-        }
-
-        .done-btn:hover {
-            background: rgba(61, 211, 145, .25);
-        }
-
-        .delete-btn {
-            background: rgba(255, 83, 111, .10);
-            color: #ff8298;
-            border-color: rgba(255, 83, 111, .18);
-        }
-
-        .delete-btn:hover {
-            background: rgba(255, 83, 111, .25);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 15px;
-            color: var(--muted);
-            background: rgba(255, 255, 255, .025);
-            border: 1px dashed rgba(255, 255, 255, .13);
-            border-radius: 15px;
-        }
-
-        .empty-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
-
-        /* Footer */
-
-        .footer {
-            border-top: 1px solid rgba(255, 255, 255, .08);
-            margin-top: 65px;
-            padding-top: 22px;
-            color: #68738f;
-            font-size: 12px;
-        }
-
-        .footer-highlight {
-            color: #a99aff;
-        }
-
-        @media (max-width: 576px) {
-            .main-container {
-                padding-top: 42px;
-            }
-
-            .input-panel {
-                padding: 17px;
-            }
-
-            .task-card {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .task-actions {
-                width: 100%;
-            }
-
-            .task-actions form {
-                flex: 1;
-            }
-
-            .task-actions button {
-                width: 100%;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-        }
-
-        /* =========================================
-   CLOUDSCALE - RETRO FUTURISTIC THEME
-   ========================================= */
-
-        :root {
-            --bg: #080b18;
-            --purple: #a78bfa;
-            --blue: #60a5fa;
-            --cyan: #67e8f9;
-            --muted: #929bb5;
-            --glass: rgba(112, 103, 180, 0.075);
-            --glass-border: rgba(167, 139, 250, 0.20);
-        }
-
-        /* Typography */
-
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-
-            background-color: var(--bg);
-
-            background-image:
-                linear-gradient(rgba(130, 110, 255, 0.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(130, 110, 255, 0.035) 1px, transparent 1px);
-
-            background-size: 38px 38px;
-        }
-
-        /* CRT scanline overlay */
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-
-            background: repeating-linear-gradient(to bottom,
-                    transparent 0px,
-                    transparent 3px,
-                    rgba(0, 0, 0, 0.12) 4px);
-
-            opacity: 0.28;
-        }
-
-        /* Keep content above overlay */
-
-        .navbar,
-        .main-container {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Navigation */
-
-        .navbar {
-            background: rgba(8, 11, 24, 0.78);
-            border-bottom: 1px solid rgba(167, 139, 250, 0.18);
-            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .brand {
-            letter-spacing: -1.5px;
-        }
-
-        .brand-icon {
-            border-radius: 8px;
-            background: linear-gradient(135deg, #a78bfa, #38bdf8);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.45);
-        }
-
-        /* Retro typography */
-
-        .eyebrow,
-        .stat-label,
-        .nav-status,
-        .footer {
-            font-family: 'IBM Plex Mono', monospace;
-        }
-
-        .eyebrow {
-            letter-spacing: 3px;
-            color: var(--cyan);
-        }
-
-        .hero-title {
-            letter-spacing: -2px;
-        }
-
-        .gradient-text {
-            background: linear-gradient(100deg,
-                    #c4b5fd,
-                    #818cf8,
-                    #67e8f9);
-
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-
-            filter: drop-shadow(0 0 18px rgba(129, 140, 248, 0.18));
-        }
-
-        /* Glass panels */
-
-        .glass {
-            background: linear-gradient(135deg,
-                    rgba(139, 120, 220, 0.10),
-                    rgba(60, 130, 210, 0.045));
-
-            border: 1px solid var(--glass-border);
-
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-
-            box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, 0.07),
-                0 12px 40px rgba(0, 0, 0, 0.22);
-        }
-
-        .stat-card:hover,
-        .task-card:hover {
-            border-color: rgba(103, 232, 249, 0.35);
-
-            box-shadow:
-                0 0 25px rgba(139, 92, 246, 0.09),
-                inset 0 0 20px rgba(139, 92, 246, 0.035);
-        }
-
-        /* System-style status labels */
-
-        .nav-status {
-            border-radius: 5px;
-            letter-spacing: 0.4px;
-            font-size: 10px;
-            text-transform: uppercase;
-        }
-
-        /* Stat numbers */
-
-        .stat-value {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 27px;
-            color: #e0ddff;
-        }
-
-        /* Input */
-
-        .form-control {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 13px;
-            background: rgba(5, 8, 22, 0.55);
-            border-color: rgba(167, 139, 250, 0.22);
-            border-radius: 8px;
-        }
-
-        .form-control:focus {
-            border-color: var(--cyan);
-            box-shadow: 0 0 15px rgba(103, 232, 249, 0.12) !important;
-        }
-
-        /* Buttons */
-
-        .add-btn {
-            background: linear-gradient(110deg, #7955db, #397de0);
-            border: 1px solid rgba(196, 181, 253, 0.35);
-            border-radius: 8px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .add-btn:hover {
-            background: linear-gradient(110deg, #916cff, #4b9aff);
-        }
-
-        .action-btn {
-            font-family: 'IBM Plex Mono', monospace;
-            border-radius: 6px;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.2px;
-        }
-
-        /* Task cards */
-
-        .task-card {
-            background: rgba(18, 21, 43, 0.68);
-            border-color: rgba(167, 139, 250, 0.15);
-            border-radius: 10px;
-        }
-
-        .task-name {
-            letter-spacing: 0.1px;
-        }
-
-        /* Section titles */
-
-        .section-title {
-            letter-spacing: -0.5px;
-        }
-
-        /* Footer */
-
-        .footer {
-            letter-spacing: 0.3px;
-            font-size: 10px;
-            text-transform: uppercase;
-        }
-
-        /* Ambient lighting */
-
-        .ambient.one {
-            background: #744cff;
-            opacity: 0.25;
-        }
-
-        .ambient.two {
-            background: #087dff;
-            opacity: 0.19;
-        }
-
-        .ambient.three {
-            background: #c04cff;
-            opacity: 0.15;
-        }
-
-        /* Subtle retro glow */
-
-        .status-dot {
-            box-shadow: 0 0 5px #50e69a, 0 0 12px #50e69a;
-        }
-
-        /* Mobile adjustments */
-
-        @media (max-width: 576px) {
-            body {
-                background-size: 25px 25px;
-            }
-
-            .eyebrow {
-                letter-spacing: 1.5px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="ambient one"></div>
-    <div class="ambient two"></div>
-    <div class="ambient three"></div>
-
-    <!-- Navigation -->
-
-    <nav class="navbar">
-        <div class="container d-flex justify-content-between align-items-center">
-
-            <div class="brand">
-                <span class="brand-icon">✦</span>
-                CloudScale
-            </div>
-
-            <div class="nav-status">
-                <span class="status-dot"></span>
-                Workspace active
-            </div>
-
-        </div>
-    </nav>
-
-
-    <!-- Main content -->
-
-    <div class="container main-container">
-
-        <!-- Hero -->
-
-        <div class="mb-5">
-
-            <div class="eyebrow">Your productivity workspace</div>
-
-            <h1 class="hero-title">
-                Organize your work.<br>
-                <span class="gradient-text">Scale your ambitions.</span>
-            </h1>
-
-            <p class="hero-description">
-                A simple, cloud-powered workspace to keep your tasks
-                organized and your productivity moving forward.
-            </p>
-
-        </div>
-
-
-        <!-- Statistics -->
-
-        {% set completed_count = tasks|selectattr('completed')|list|length %}
-        {% set pending_count = tasks|rejectattr('completed')|list|length %}
-
-        <div class="row g-3">
-
-            <div class="col-4">
-                <div class="glass stat-card h-100">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="stat-label">Total tasks</span>
-                        <span class="stat-icon purple-icon">▤</span>
-                    </div>
-                    <div class="stat-value">{{ tasks|length }}</div>
-                </div>
-            </div>
-
-            <div class="col-4">
-                <div class="glass stat-card h-100">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="stat-label">Pending</span>
-                        <span class="stat-icon blue-icon">◷</span>
-                    </div>
-                    <div class="stat-value">{{ pending_count }}</div>
-                </div>
-            </div>
-
-            <div class="col-4">
-                <div class="glass stat-card h-100">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="stat-label">Completed</span>
-                        <span class="stat-icon green-icon">✓</span>
-                    </div>
-                    <div class="stat-value">{{ completed_count }}</div>
-                </div>
-            </div>
-
-        </div>
-
-
-        <!-- Add task -->
-
-        <div class="glass input-panel">
-
-            <div class="section-title mb-3">
-                Create a new task
-            </div>
-
-            <form action="/add" method="POST" class="d-flex gap-2">
-
-                <input type="text" name="title" class="form-control" placeholder="What needs to get done?"
-                    maxlength="200" required>
-
-                <button type="submit" class="add-btn">
-                    + Add task
-                </button>
-
-            </form>
-
-        </div>
-
-
-        <!-- Task list -->
-
-        <div class="task-section">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-
-                <div>
-                    <div class="section-title">Your tasks</div>
-                    <div class="stat-label mt-1">
-                        Everything you need to get done.
-                    </div>
-                </div>
-
-                <div class="nav-status">
-                    {{ tasks|length }} items
-                </div>
-
-            </div>
-
-
-            {% if tasks %}
-
-            {% for task in tasks %}
-
-            <div class="task-card">
-
-                <div class="task-name {% if task.completed %}completed{% endif %}">
-                    {% if task.completed %}
-                    <span class="text-success me-2">✓</span>
-                    {% else %}
-                    <span class="me-2" style="color:#9275ff;">◉</span>
-                    {% endif %}
-
-                    {{ task.title }}
-                </div>
-
-                <div class="task-actions">
-
-                    <form action="/toggle/{{ task.id }}" method="POST">
-                        <button type="submit" class="action-btn done-btn">
-                            {% if task.completed %}
-                            ↶ Undo
-                            {% else %}
-                            ✓ Complete
-                            {% endif %}
-                        </button>
-                    </form>
-
-                    <form action="/delete/{{ task.id }}" method="POST">
-                        <button type="submit" class="action-btn delete-btn">
-                            ✕ Delete
-                        </button>
-                    </form>
-
-                </div>
-
-            </div>
-
-            {% endfor %}
-
-            {% else %}
-
-            <div class="empty-state">
-                <div class="empty-icon">✧</div>
-                <div class="fw-semibold text-white mb-2">
-                    Nothing on your plate yet.
-                </div>
-                <div class="small">
-                    Add your first task above and get started.
-                </div>
-            </div>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- Footer -->
-
-        <div class="footer d-flex justify-content-between flex-wrap gap-2">
-
-            <span>
-                © 2026 CLOUDSCALE // SYSTEM ONLINE
-            </span>
-
-            <span>
-                Powered by <span class="footer-highlight">Flask</span>
-                & <span class="footer-highlight">PostgreSQL</span>
-            </span>
-
-        </div>
-
+{% extends "base.html" %}
+{% block title %}CloudScale | Workspace{% endblock %}
+{% block content %}
+<main class="shell">
+  <div class="meta-row"><span>AFTER HOURS / PERSONAL WORKSPACE</span><span>BUILD 03.00 · CLOUD SESSION</span></div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}"
+      role="status">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% endwith %}
+  <section class="hero">
+    <div>
+      <div class="eyebrow">A QUIET PLACE TO GET THINGS DONE</div>
+      <h1>Good things <span>take time.</span></h1>
+      <p class="hero-copy">Welcome back, {{ username }}. Your little corner of the cloud is ready. Make a list, find
+        your rhythm, and take it one task at a time.</p>
+    </div>
+    <div class="clock-card">
+      <div class="clock-label">LOCAL SYSTEM TIME</div>
+      <div class="clock" id="clock">--:--</div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Task statistics">
+    <article class="stat total">
+      <div class="stat-label">TOTAL NOTES</div>
+      <div class="stat-value">{{ total_count }}</div>
+    </article>
+    <article class="stat active">
+      <div class="stat-label">IN PROGRESS</div>
+      <div class="stat-value">{{ active_count }}</div>
+    </article>
+    <article class="stat done">
+      <div class="stat-label">ALL DONE</div>
+      <div class="stat-value">{{ completed_count }}</div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Leave yourself a note</h2>
+        <div class="section-note">WRITE IT DOWN. GET IT OUT OF YOUR HEAD.</div>
+      </div><span class="count-tag">PRIVATE LIST</span>
+    </div>
+    <form class="task-form" action="{{ url_for('add_task') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input class="field" type="text" name="title" maxlength="200" placeholder="Something you'd like to get done..."
+        aria-label="New task" required>
+      <button class="btn btn-primary" type="submit">＋ ADD NOTE</button>
+    </form>
+  </section>
+
+  <section class="task-section">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Your little list</h2>
+        <div class="section-note">ONE THING AT A TIME.</div>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all" type="button">
+          ALL
+        </button>
+
+        <button class="filter-btn" data-filter="pending" type="button">
+          IN PROGRESS
+        </button>
+
+        <button class="filter-btn" data-filter="completed" type="button">
+          COMPLETED
+        </button>
+
+        <span class="count-tag" id="entryCount">
+          {{ tasks|length }} {{ 'ENTRY' if tasks|length == 1 else 'ENTRIES' }}
+        </span>
+      </div>
     </div>
 
-</body>
+    {% if tasks %}
+    <div class="task-list" id="taskList">
+      {% for task in tasks %}
+      <article class="task-card" data-completed="{{ 'true' if task.completed else 'false' }}">
+        <div class="task-main">
+          <span class="task-marker">{% if task.completed %}✓{% else %}·{% endif %}</span>
+          <span class="task-name {% if task.completed %}completed{% endif %}">{{ task.title }}</span>
+        </div>
+        <div class="task-actions">
+          <form action="{{ url_for('toggle_task', task_id=task.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-done" type="submit">{% if task.completed %}↶ UNDO{% else %}✓ DONE{% endif %}</button>
+          </form>
+          <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST"
+            onsubmit="return confirm('Delete this note?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-delete" type="submit">× DELETE</button>
+          </form>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
 
-</html>
+    <div class="empty-state" id="emptyState" {% if tasks %}hidden{% endif %}>
+      <div class="empty-symbol">✧</div>
+      <div class="empty-title" id="emptyTitle">Nothing on your plate yet.</div>
+      <div class="empty-copy" id="emptyMessage">Add your first task above and get started.</div>
+    </div>
+  </section>
+
+  <footer class="footer"><span>© 2026 CLOUDSCALE // TAKE IT SLOW</span><span>MADE WITH <strong>FLASK</strong> +
+      <strong>POSTGRESQL</strong></span></footer>
+</main>
+
+<script>
+  // Local clock for the workspace header.
+  function updateClock() {
+    const el = document.getElementById('clock');
+    if (el) {
+      el.textContent = new Intl.DateTimeFormat([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(new Date());
+    }
+  }
+  updateClock();
+  setInterval(updateClock, 15000);
+
+  // Client-side task filters; all task ownership is still enforced by Flask.
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const taskCards = [...document.querySelectorAll('.task-card')];
+    const entryCount = document.getElementById('entryCount');
+    const emptyState = document.getElementById('emptyState');
+    const emptyTitle = document.getElementById('emptyTitle');
+    const emptyMessage = document.getElementById('emptyMessage');
+
+    function applyFilter(filter) {
+      filterButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+
+      let visibleCount = 0;
+
+      taskCards.forEach(card => {
+        const isCompleted = card.dataset.completed === 'true';
+        const shouldShow =
+          filter === 'all' ||
+          (filter === 'completed' && isCompleted) ||
+          (filter === 'pending' && !isCompleted);
+
+        card.hidden = !shouldShow;
+        if (shouldShow) visibleCount++;
+      });
+
+      if (entryCount) {
+        entryCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'ENTRY' : 'ENTRIES'}`;
+      }
+
+      if (emptyState) {
+        const hasAnyTasks = taskCards.length > 0;
+        emptyState.hidden = visibleCount > 0;
+
+        if (!hasAnyTasks) {
+          emptyTitle.textContent = 'Nothing on your plate yet.';
+          emptyMessage.textContent = 'Add your first task above and get started.';
+        } else {
+          emptyTitle.textContent = 'Nothing in this view.';
+          emptyMessage.textContent = 'Try another filter to see your notes.';
+        }
+      }
+    }
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        applyFilter(button.dataset.filter);
+      });
+    });
+
+    // Initialize default view on load
+    applyFilter('all');
+  });
+</script>
+{% endblock %}

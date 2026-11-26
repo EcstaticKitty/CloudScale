@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Sign in | CloudScale{% endblock %}
+{% block content %}
+<main class="auth-wrap"><section class="auth-card">
+  <div class="auth-brand"><div class="brand"><span class="brand-mark">✳</span>CloudScale</div><p>YOUR LITTLE CORNER OF THE CLOUD</p></div>
+  <h1>Welcome back.</h1><p class="auth-sub">Sign in and pick up where you left off.</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack">{% for category,message in messages %}<div class="flash {{ category }}" role="status">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+  <form class="auth-form" method="POST" action="{{ url_for('login') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div><label for="username">Username</label><input class="field" id="username" name="username" autocomplete="username" maxlength="80" placeholder="Your username" required></div>
+    <div><label for="password">Password</label><input class="field" id="password" type="password" name="password" autocomplete="current-password" placeholder="Your password" required></div>
+    <button class="btn btn-primary" type="submit">SIGN IN ↗</button>
+  </form>
+  <p class="auth-foot">New around here? <a href="{{ url_for('register') }}">Create an account</a></p>
+</section></main>
+{% endblock %}

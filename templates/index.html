@@ -1,78 +1,43 @@
 {% extends "base.html" %}
-{% block title %}CloudScale | Workspace{% endblock %}
+{% block title %}Stratos | Workspace{% endblock %}
 {% block content %}
 <main class="shell">
   <div class="meta-row"><span>AFTER HOURS / PERSONAL WORKSPACE</span><span>BUILD 03.00 · CLOUD SESSION</span></div>
   {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}"
-      role="status">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}" role="status">{{ message }}</div>{% endfor %}</div>{% endif %}
   {% endwith %}
   <section class="hero">
     <div>
       <div class="eyebrow">A QUIET PLACE TO GET THINGS DONE</div>
       <h1>Good things <span>take time.</span></h1>
-      <p class="hero-copy">Welcome back, {{ username }}. Your little corner of the cloud is ready. Make a list, find
-        your rhythm, and take it one task at a time.</p>
+      <p class="hero-copy">Welcome back, {{ username }}. Your little corner of the cloud is ready. Make a list, find your rhythm, and take it one task at a time.</p>
     </div>
-    <div class="clock-card">
-      <div class="clock-label">LOCAL SYSTEM TIME</div>
-      <div class="clock" id="clock">--:--</div>
-    </div>
+    <div class="clock-card"><div class="clock-label">LOCAL SYSTEM TIME</div><div class="clock" id="clock">--:--</div></div>
   </section>
 
   <section class="stats" aria-label="Task statistics">
-    <article class="stat total">
-      <div class="stat-label">TOTAL NOTES</div>
-      <div class="stat-value">{{ total_count }}</div>
-    </article>
-    <article class="stat active">
-      <div class="stat-label">IN PROGRESS</div>
-      <div class="stat-value">{{ active_count }}</div>
-    </article>
-    <article class="stat done">
-      <div class="stat-label">ALL DONE</div>
-      <div class="stat-value">{{ completed_count }}</div>
-    </article>
+    <article class="stat total"><div class="stat-label">TOTAL NOTES</div><div class="stat-value">{{ total_count }}</div></article>
+    <article class="stat active"><div class="stat-label">IN PROGRESS</div><div class="stat-value">{{ active_count }}</div></article>
+    <article class="stat done"><div class="stat-label">ALL DONE</div><div class="stat-value">{{ completed_count }}</div></article>
   </section>
 
   <section class="panel">
-    <div class="section-head">
-      <div>
-        <h2 class="section-title">Leave yourself a note</h2>
-        <div class="section-note">WRITE IT DOWN. GET IT OUT OF YOUR HEAD.</div>
-      </div><span class="count-tag">PRIVATE LIST</span>
-    </div>
+    <div class="section-head"><div><h2 class="section-title">Leave yourself a note</h2><div class="section-note">WRITE IT DOWN. GET IT OUT OF YOUR HEAD.</div></div><span class="count-tag">PRIVATE LIST</span></div>
     <form class="task-form" action="{{ url_for('add_task') }}" method="POST">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input class="field" type="text" name="title" maxlength="200" placeholder="Something you'd like to get done..."
-        aria-label="New task" required>
+      <input class="field" type="text" name="title" maxlength="200" placeholder="Something you'd like to get done..." aria-label="New task" required>
       <button class="btn btn-primary" type="submit">＋ ADD NOTE</button>
     </form>
   </section>
 
   <section class="task-section">
     <div class="section-head">
-      <div>
-        <h2 class="section-title">Your little list</h2>
-        <div class="section-note">ONE THING AT A TIME.</div>
-      </div>
-
-      <div class="filter-row">
-        <button class="filter-btn active" data-filter="all" type="button">
-          ALL
-        </button>
-
-        <button class="filter-btn" data-filter="pending" type="button">
-          IN PROGRESS
-        </button>
-
-        <button class="filter-btn" data-filter="completed" type="button">
-          COMPLETED
-        </button>
-
-        <span class="count-tag" id="entryCount">
-          {{ tasks|length }} {{ 'ENTRY' if tasks|length == 1 else 'ENTRIES' }}
-        </span>
+      <div><h2 class="section-title">Your little list</h2><div class="section-note">ONE THING AT A TIME.</div></div>
+      <div class="filter-row" aria-label="Filter tasks">
+        <button class="filter-btn active" type="button" data-filter="all">ALL</button>
+        <button class="filter-btn" type="button" data-filter="active">IN PROGRESS</button>
+        <button class="filter-btn" type="button" data-filter="completed">COMPLETED</button>
+        <span class="count-tag">{{ total_count }} ENTRIES</span>
       </div>
     </div>
 
@@ -89,8 +54,7 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="btn btn-done" type="submit">{% if task.completed %}↶ UNDO{% else %}✓ DONE{% endif %}</button>
           </form>
-          <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST"
-            onsubmit="return confirm('Delete this note?');">
+          <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" onsubmit="return confirm('Delete this note?');">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="btn btn-delete" type="submit">× DELETE</button>
           </form>
@@ -98,87 +62,27 @@
       </article>
       {% endfor %}
     </div>
+    <div class="empty-state" id="filterEmpty" hidden><div class="empty-symbol">✧</div><div class="empty-title">Nothing in this view.</div><div class="empty-copy">Try another filter to see your notes.</div></div>
+    {% else %}
+    <div class="empty-state"><div class="empty-symbol">✧</div><div class="empty-title">Nothing on your plate yet.</div><div class="empty-copy">Add your first note above. Small steps count, too.</div></div>
     {% endif %}
-
-    <div class="empty-state" id="emptyState" {% if tasks %}hidden{% endif %}>
-      <div class="empty-symbol">✧</div>
-      <div class="empty-title" id="emptyTitle">Nothing on your plate yet.</div>
-      <div class="empty-copy" id="emptyMessage">Add your first task above and get started.</div>
-    </div>
   </section>
 
-  <footer class="footer"><span>© 2026 CLOUDSCALE // TAKE IT SLOW</span><span>MADE WITH <strong>FLASK</strong> +
-      <strong>POSTGRESQL</strong></span></footer>
+  <footer class="footer"><span>© 2026 STRATOS // TAKE IT SLOW</span><span>MADE WITH <strong>FLASK</strong> + <strong>POSTGRESQL</strong></span></footer>
 </main>
-
 <script>
   // Local clock for the workspace header.
-  function updateClock() {
-    const el = document.getElementById('clock');
-    if (el) {
-      el.textContent = new Intl.DateTimeFormat([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      }).format(new Date());
-    }
-  }
-  updateClock();
-  setInterval(updateClock, 15000);
-
+  function updateClock(){const el=document.getElementById('clock');if(el)el.textContent=new Intl.DateTimeFormat([], {hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());}
+  updateClock();setInterval(updateClock,15000);
   // Client-side task filters; all task ownership is still enforced by Flask.
-  document.addEventListener('DOMContentLoaded', () => {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const taskCards = [...document.querySelectorAll('.task-card')];
-    const entryCount = document.getElementById('entryCount');
-    const emptyState = document.getElementById('emptyState');
-    const emptyTitle = document.getElementById('emptyTitle');
-    const emptyMessage = document.getElementById('emptyMessage');
-
-    function applyFilter(filter) {
-      filterButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === filter);
-      });
-
-      let visibleCount = 0;
-
-      taskCards.forEach(card => {
-        const isCompleted = card.dataset.completed === 'true';
-        const shouldShow =
-          filter === 'all' ||
-          (filter === 'completed' && isCompleted) ||
-          (filter === 'pending' && !isCompleted);
-
-        card.hidden = !shouldShow;
-        if (shouldShow) visibleCount++;
-      });
-
-      if (entryCount) {
-        entryCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'ENTRY' : 'ENTRIES'}`;
-      }
-
-      if (emptyState) {
-        const hasAnyTasks = taskCards.length > 0;
-        emptyState.hidden = visibleCount > 0;
-
-        if (!hasAnyTasks) {
-          emptyTitle.textContent = 'Nothing on your plate yet.';
-          emptyMessage.textContent = 'Add your first task above and get started.';
-        } else {
-          emptyTitle.textContent = 'Nothing in this view.';
-          emptyMessage.textContent = 'Try another filter to see your notes.';
-        }
-      }
-    }
-
-    filterButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        applyFilter(button.dataset.filter);
-      });
-    });
-
-    // Initialize default view on load
-    applyFilter('all');
-  });
+  const filterButtons=document.querySelectorAll('[data-filter]');
+  const taskCards=[...document.querySelectorAll('.task-card')];
+  const filterEmpty=document.getElementById('filterEmpty');
+  filterButtons.forEach(button=>button.addEventListener('click',()=>{
+    filterButtons.forEach(item=>item.classList.toggle('active',item===button));
+    const filter=button.dataset.filter;let visible=0;
+    taskCards.forEach(card=>{const completed=card.dataset.completed==='true';const show=filter==='all'||(filter==='completed'&&completed)||(filter==='active'&&!completed);card.hidden=!show;if(show)visible++;});
+    if(filterEmpty)filterEmpty.hidden=visible!==0;
+  }));
 </script>
 {% endblock %}

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Create account | CloudScale{% endblock %}
+{% block title %}Create account | Stratos{% endblock %}
 {% block content %}
 <main class="auth-wrap"><section class="auth-card">
-  <div class="auth-brand"><div class="brand"><span class="brand-mark">✳</span>CloudScale</div><p>YOUR LITTLE CORNER OF THE CLOUD</p></div>
+  <div class="auth-brand"><div class="brand"><img class="brand-mark auth-logo" src="{{ url_for('static', filename='images/stratos-logo.jpg') }}" alt="Stratos logo"> STRATOS</div><p>YOUR LITTLE CORNER OF THE CLOUD</p></div>
   <h1>Make some space.</h1><p class="auth-sub">Create an account for your own private task list.</p>
   {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack">{% for category,message in messages %}<div class="flash {{ category }}" role="status">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
   <form class="auth-form" method="POST" action="{{ url_for('register') }}">
